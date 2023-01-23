@@ -14,7 +14,7 @@ import javax.persistence.EntityManager
 class RestaurantTest (
     @Autowired val menuRepository: MemberRepository,
     @Autowired val restaurantRepository: RestaurantRepository,
-    @Autowired val entityManager: EntityManager
+    @Autowired val entityManager: EntityManager,
 ){
 
     @Test
