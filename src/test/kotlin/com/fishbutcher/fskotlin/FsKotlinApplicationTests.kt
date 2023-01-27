@@ -8,6 +8,7 @@ class FsKotlinApplicationTests {
 
     @Test
     fun contextLoads() {
+
     }
 
 }

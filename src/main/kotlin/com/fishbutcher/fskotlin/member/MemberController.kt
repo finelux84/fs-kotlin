@@ -1,6 +1,8 @@
 package com.fishbutcher.fskotlin.member
 
 import com.fishbutcher.fskotlin.member.exception.PasswordConfirmationFailException
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -24,6 +26,11 @@ class MemberController {
         } catch (e: Exception) {
             CreateMemberResponse(false, null, null)
         }
+    }
+
+    @DeleteMapping("/{id}")
+    fun deleteMember(@PathVariable id: Long) {
+        memberService.leave(id);
     }
 
     private fun of(createdMember: Member): CreateMemberResponse {
