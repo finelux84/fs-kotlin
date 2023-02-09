@@ -27,7 +27,7 @@ class ReviewRepositoryTest(
     @DisplayName("리뷰 저장 테스트")
     fun `리뷰 저장`() {
         // given
-        var member = Member("test-member", "1234")
+        var member = Member("test-member", "test-lastname","1234")
         memberRepository.save(member)
 
         var restaurant = Restaurant.of("스시 이도", "성남시", "판교역")

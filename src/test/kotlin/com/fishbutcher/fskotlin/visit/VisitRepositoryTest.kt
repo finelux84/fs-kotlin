@@ -24,7 +24,7 @@ class VisitRepositoryTest(
     @DisplayName("특정 회원의 방문 목록을 조회")
     fun testCreateVisit() {
         // given
-        var member = Member("test-member", "1234")
+        var member = Member("test-member", "lastname","1234")
         memberRepository.save(member)
 
         var restaurant = Restaurant.of("스시 이도", "성남시", "판교역")

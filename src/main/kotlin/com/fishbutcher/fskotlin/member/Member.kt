@@ -7,8 +7,8 @@ import javax.persistence.*
 @Entity
 @Table(name = "tbl_member")
 class Member {
-    constructor(name: String, passwordDigest: String) {
-        this.name = name
+    constructor(firstName: String, lastName: String, passwordDigest: String) {
+        this.memberName = MemberName(firstName, lastName);
         this.passwordDigest = passwordDigest
     }
 
@@ -16,8 +16,12 @@ class Member {
     @GeneratedValue
     var id: Long? = null
 
-    @Column
-    var name: String
+    @Embedded
+    @AttributeOverrides(
+        AttributeOverride(name = "firstName", column = Column(name = "first_name")),
+        AttributeOverride(name = "lastName", column = Column(name = "last_name"))
+    )
+    var memberName: MemberName?
 
     @Column
     var passwordDigest: String
@@ -36,3 +40,4 @@ class Member {
     @JoinColumn(name = "memberId")
     var visits: List<Visit>? = null
 }
+

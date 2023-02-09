@@ -13,7 +13,7 @@ class MemberService {
 
     fun createMember(request: MemberController.CreateMemberRequest): Member {
         val passwordDigest = PasswordDigestUtil.hash(request.password)
-        val newMember = Member(request.name, passwordDigest)
+        val newMember = Member(request.firstName, request.lastName, passwordDigest)
         return memberRepository.save(newMember)
     }
 

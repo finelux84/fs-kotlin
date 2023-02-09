@@ -18,15 +18,18 @@ class MemberServiceTest (
     fun createMemberTest() {
         // given
         val plainTextPassword = "12345"
-        val memberName = "finelux32"
-        val createMemberRequest = MemberController.CreateMemberRequest(memberName, plainTextPassword, plainTextPassword)
+        val memberFirstName = "finelux"
+        val memberLastName = "32"
+        val memberName = MemberName(memberFirstName, memberLastName)
+
+        val createMemberRequest = MemberController.CreateMemberRequest(memberFirstName, memberLastName, plainTextPassword, plainTextPassword)
         // when
         memberService.createMember(createMemberRequest)
         // then
-        val memberOptional = memberRepository.findByName(memberName)
+        val memberOptional = memberRepository.findByMemberName(memberName)
         assertTrue(memberOptional.isPresent)
         val member = memberOptional.get()
-        assertEquals(memberName, member.name)
+        assertEquals(memberName.getFullName(), member.memberName!!.getFullName())
         assertEquals(PasswordDigestUtil.hash(plainTextPassword), member.passwordDigest)
     }
 }

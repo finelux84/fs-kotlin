@@ -18,7 +18,7 @@ class MemberRepositoryTest(
     @DisplayName("회원 저장이 정상적으로 동작해야 한다")
     fun `회원 저장`() {
         // given
-        val account = Member("my name", "1234")
+        val account = Member("my name", "my last name", "1234")
 
         // when
         memberRepository.save(account);
@@ -26,11 +26,11 @@ class MemberRepositoryTest(
         entityManager.flush()
         entityManager.clear()
 
-        val selectedAccountOptional = memberRepository.findByName(account.name)
+        val selectedAccountOptional = memberRepository.findByMemberName(account.memberName!!)
         val selectedAccount = selectedAccountOptional.get();
         // then
         assertEquals(selectedAccount.id, account.id);
-        assertEquals(selectedAccount.name, account.name);
+        assertEquals(selectedAccount.memberName!!.getFullName(), account.memberName!!.getFullName());
 
         assertNotNull(selectedAccount.createdAt);
         assertNotNull(selectedAccount.updatedAt);

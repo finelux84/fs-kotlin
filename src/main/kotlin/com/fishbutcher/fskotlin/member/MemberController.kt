@@ -34,7 +34,7 @@ class MemberController {
     }
 
     private fun of(createdMember: Member): CreateMemberResponse {
-        return CreateMemberResponse(true, createdMember.id!!, createdMember.name)
+        return CreateMemberResponse(true, createdMember.id!!, createdMember.memberName!!.getFullName())
     }
 
     private fun validatePassword(request: CreateMemberRequest) {
@@ -44,7 +44,8 @@ class MemberController {
     }
 
     class CreateMemberRequest(
-        val name: String,
+        val firstName: String,
+        val lastName: String,
         val password: String,
         val passwordConfirmation: String
     )

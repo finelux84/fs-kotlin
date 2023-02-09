@@ -6,5 +6,5 @@ import java.util.*
 
 @Repository
 interface MemberRepository : JpaRepository<Member, Long>{
-    fun findByName(name: String): Optional<Member>
+    fun findByMemberName(memberName: MemberName): Optional<Member>
 }
