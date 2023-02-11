@@ -25,7 +25,6 @@ class VisitRepositoryTest(
 ) {
     @Test
     @DisplayName("특정 회원의 방문 목록을 조회")
-    @Rollback(value = false)
     fun testCreateVisit() {
         // given
         var member = createMember()
