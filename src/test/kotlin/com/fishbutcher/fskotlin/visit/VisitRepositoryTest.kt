@@ -5,13 +5,15 @@ import com.fishbutcher.fskotlin.member.MemberRepository
 import com.fishbutcher.fskotlin.restaurant.Menu
 import com.fishbutcher.fskotlin.restaurant.Restaurant
 import com.fishbutcher.fskotlin.restaurant.RestaurantRepository
-import io.kotlintest.matchers.collections.shouldHaveAtLeastSize
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.annotation.Rollback
 import org.springframework.transaction.annotation.Transactional
+import java.awt.SystemColor.menu
+import javax.persistence.EntityManager
 
 @SpringBootTest
 @Transactional
@@ -19,33 +21,29 @@ class VisitRepositoryTest(
     @Autowired val visitRepository: VisitRepository,
     @Autowired val memberRepository: MemberRepository,
     @Autowired val restaurantRepository: RestaurantRepository,
+    @Autowired val entityManager: EntityManager
 ) {
     @Test
     @DisplayName("특정 회원의 방문 목록을 조회")
+    @Rollback(value = false)
     fun testCreateVisit() {
         // given
-        var member = Member("test-member", "lastname","1234")
-        memberRepository.save(member)
-
-        var restaurant = Restaurant.of("스시 이도", "성남시", "판교역")
-        var menu = Menu(restaurant, "디너 오마카세", 250000)
-        restaurant.addMenu(menu)
-        restaurantRepository.save(restaurant)
-
-        var visit = Visit(member.id!!, restaurant.id!!)
-        var order = Order(visit, menu.id!!)
-        visit.addOrder(order)
-        visitRepository.save(visit)
-
+        var member = createMember()
+        var restaurant = createRestaurant()
         // when
-        val visitSelectedOptional = visitRepository.findById(visit.id!!)
+        var visit = createVisit(member, restaurant)
+
+        entityManager.flush()
+        entityManager.clear()
 
         // then
         // Visit Entity가 검색되어야 하고,
-        assertTrue(visitSelectedOptional.isPresent)
-        val visitSelected = visitSelectedOptional.get()
 
-        assertNotNull(visitSelected.id)
+        val visitOptional = visitRepository.findById(visit.visitId!!)
+        assertTrue(visitOptional.isPresent)
+        val visitSelected = visitOptional.get()
+
+        assertNotNull(visitSelected.visitId)
         assertNotNull(visitSelected.memberId)
         assertNotNull(visitSelected.restaurantId)
         assertNotNull(visitSelected.createdAt)
@@ -53,16 +51,10 @@ class VisitRepositoryTest(
 
         // Order, Restaurant, Menu가 맵핑되어 있어야 한다.
         assertFalse(visitSelected.orders.isNullOrEmpty())
-
         val orders = visitSelected.orders
         assertTrue(orders!!.size == 1)
-
         val firstOrder = orders!!.first()
-        assertNotNull(firstOrder.id)
-        assertNotNull(firstOrder.visit)
-        assertNotNull(firstOrder.menuId)
-        assertNotNull(firstOrder.createdAt)
-        assertNotNull(firstOrder.updatedAt)
+        assertNotNull(firstOrder.menuIdx)
 
         val restaurantOptional = restaurantRepository.findById(visitSelected.restaurantId)
         assertTrue(restaurantOptional.isPresent)
@@ -73,12 +65,37 @@ class VisitRepositoryTest(
 
         val menus = restaurantSelected.menus
         assertNotNull(menus)
-        assertEquals(1, menus!!.size)
+        assertEquals(2, menus!!.size)
         val firstMenu = menus.first()
-        assertEquals(menu.id, firstMenu.id)
-        assertEquals(menu.name, firstMenu.name)
-        assertEquals(menu.price, firstMenu.price)
-        assertEquals(menu.createdAt, firstMenu.createdAt)
-        assertEquals(menu.updatedAt, firstMenu.updatedAt)
+
+        assertEquals("디너 오마카세", firstMenu.name)
+        assertEquals(100000, firstMenu.price)
     }
+
+    private fun createVisit(
+        member: Member,
+        restaurant: Restaurant
+    ): Visit {
+        var order = Order(0) // 디너 오마카세
+        val orders = mutableListOf<Order>(order)
+        var visit = Visit(member.id!!, restaurant.id!!, orders)
+        visitRepository.save(visit)
+        return visit
+    }
+
+    private fun createRestaurant(): Restaurant {
+        val menu1 = Menu("디너 오마카세", 100000)
+        val menu2 = Menu("런치 오마카세", 60000)
+        val menus = mutableListOf<Menu>(menu1, menu2)
+        var restaurant = Restaurant.of("스시 이도", "성남시", "판교역", menus)
+        restaurantRepository.save(restaurant)
+        return restaurant
+    }
+
+    private fun createMember(): Member {
+        var member = Member("test-member", "test-lastname", "1234")
+        memberRepository.save(member)
+        return member
+    }
+
 }

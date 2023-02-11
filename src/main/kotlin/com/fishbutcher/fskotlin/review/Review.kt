@@ -5,6 +5,11 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "tbl_review")
+@SequenceGenerator(
+    name = "review_seq_generator",
+    sequenceName = "review_sequence",
+    initialValue = 1, allocationSize = 1
+)
 class Review(
     @Column
     var visitId: Long,
@@ -17,7 +22,7 @@ class Review(
 
 ) {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     var id: Long? = null
 
     @Column

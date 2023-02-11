@@ -3,22 +3,8 @@ package com.fishbutcher.fskotlin.visit
 import java.time.LocalDateTime
 import javax.persistence.*
 
-@Entity
-@Table(name = "tbl_order")
+@Embeddable
 class Order(
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    var visit: Visit,
-    @Column
-    var menuId: Long
+    var menuIdx: Long
 ) {
-    @Id
-    @GeneratedValue
-    var id: Long? = null
-
-    @Column
-    var createdAt: LocalDateTime = LocalDateTime.now()
-
-    @Column
-    var updatedAt: LocalDateTime = LocalDateTime.now()
 }

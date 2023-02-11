@@ -13,7 +13,7 @@ class Member {
     }
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tbl_member_seq")
     var id: Long? = null
 
     @Embedded

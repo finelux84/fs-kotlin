@@ -18,37 +18,30 @@ class RestaurantTest (
 ){
 
     @Test
-    fun removeMenu() {
-        var restaurant = Restaurant.of("스시 코호시", "성남시", "판교 테크노밸리")
-        val newMenu = Menu(restaurant, "디너 오마카세", 100000)
-        restaurant.addMenu(newMenu)
+    fun createRestaurant() {
+        val menu1 = Menu("디너 오마카세", 100000)
+        val menu2 = Menu("런치 오마카세", 60000)
+        val menus = mutableListOf<Menu>(menu1, menu2)
+        var restaurant = Restaurant.of("스시 코호시", "성남시", "판교 테크노밸리", menus)
         restaurantRepository.save(restaurant)
 
         val restaurantSelectedOptional = restaurantRepository.findByName("스시 코호시")
         assertTrue(restaurantSelectedOptional.isPresent)
         val restaurantSelected = restaurantSelectedOptional.get()
 
-        assertNotNull(restaurantSelected.menus)
         assertNotNull(restaurantSelected.id)
         assertNotNull(restaurantSelected.name)
         assertNotNull(restaurantSelected.city)
         assertNotNull(restaurantSelected.address)
+        assertNotNull(restaurantSelected.menus)
 
-        val menus = restaurantSelected.menus
         assertTrue(menus!!.isNotEmpty())
-        assertTrue(menus!!.size == 1)
+        assertTrue(menus!!.size == 2)
 
         val firstMenu = menus!!.first()
-        assertNotNull(firstMenu.id)
         assertNotNull(firstMenu.name)
         assertNotNull(firstMenu.price)
-        restaurant.removeMenu(firstMenu.id!!)
         entityManager.flush()
         entityManager.clear()
-
-        // dirty check
-        val restaurantSelectedOptional2 = restaurantRepository.findById(restaurant.id!!)
-        val restaurantSelected2 = restaurantSelectedOptional2.get()
-        assertTrue(restaurantSelected2.menus!!.size == 0)
     }
 }

@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.transaction.annotation.Transactional
+import java.awt.SystemColor.menu
 
 @SpringBootTest
 @Transactional
@@ -27,73 +28,53 @@ class ReviewRepositoryTest(
     @DisplayName("리뷰 저장 테스트")
     fun `리뷰 저장`() {
         // given
-        var member = Member("test-member", "test-lastname","1234")
-        memberRepository.save(member)
-
-        var restaurant = Restaurant.of("스시 이도", "성남시", "판교역")
-        var menu = Menu(restaurant, "디너 오마카세", 250000)
-        restaurant.addMenu(menu)
-        restaurantRepository.save(restaurant)
-
-        var visit = Visit(member.id!!, restaurant.id!!)
-        var order = Order(visit, menu.id!!)
-        visit.addOrder(order)
-        visitRepository.save(visit)
+        var member = createMember()
+        var restaurant = createRestaurant()
+        var visit = createVisit(member, restaurant)
 
         // when
-        val visitSelectedOptional = visitRepository.findById(visit.id!!)
+        val visitSelectedOptional = visitRepository.findById(visit.visitId!!)
+        val review = Review.of(visit.visitId!!, "good", 5)
+        val savedReview = reviewRepository.save(review)
 
         // then
-        // Visit Entity가 검색되어야 하고,
-        assertTrue(visitSelectedOptional.isPresent)
-        val visitSelected = visitSelectedOptional.get()
+        // 리뷰가 존재해야 한다.
+        val reviewOptional = reviewRepository.findById(savedReview.id!!)
+        assertTrue(reviewOptional.isPresent)
+        val reviewSelected = reviewOptional.get()
 
-        assertNotNull(visitSelected.id)
-        assertNotNull(visitSelected.memberId)
-        assertNotNull(visitSelected.restaurantId)
-        assertNotNull(visitSelected.createdAt)
-        assertNotNull(visitSelected.updatedAt)
+        assertNotNull(reviewSelected.id)
+        assertNotNull(reviewSelected.visitId)
+        assertNotNull(reviewSelected.comment)
+        assertNotNull(reviewSelected.rating)
+        assertNotNull(reviewSelected.createdAt)
+        assertNotNull(reviewSelected.updatedAt)
+    }
 
-        // Order, Restaurant, Menu가 맵핑되어 있어야 한다.
-        assertFalse(visitSelected.orders.isNullOrEmpty())
+    private fun createVisit(
+        member: Member,
+        restaurant: Restaurant
+    ): Visit {
+        var order = Order(0) // 디너 오마카세
+        val orders = mutableListOf<Order>(order)
+        var visit = Visit(member.id!!, restaurant.id!!, orders)
+        visitRepository.save(visit)
+        return visit
+    }
 
-        val orders = visitSelected.orders
-        assertTrue(orders!!.size == 1)
+    private fun createRestaurant(): Restaurant {
+        val menu1 = Menu("디너 오마카세", 100000)
+        val menu2 = Menu("런치 오마카세", 60000)
+        val menus = mutableListOf<Menu>(menu1, menu2)
+        var restaurant = Restaurant.of("스시 이도", "성남시", "판교역", menus)
+        restaurantRepository.save(restaurant)
+        return restaurant
+    }
 
-        val firstOrder = orders!!.first()
-        assertNotNull(firstOrder.id)
-        assertNotNull(firstOrder.visit)
-        assertNotNull(firstOrder.menuId)
-        assertNotNull(firstOrder.createdAt)
-        assertNotNull(firstOrder.updatedAt)
-
-        val restaurantOptional = restaurantRepository.findById(visitSelected.restaurantId)
-        assertTrue(restaurantOptional.isPresent)
-        val restaurantSelected = restaurantOptional.get()
-        assertEquals(restaurant.name, restaurantSelected.name)
-        assertEquals(restaurant.city, restaurantSelected.city)
-        assertEquals(restaurant.address, restaurantSelected.address)
-
-        val menus = restaurantSelected.menus
-        assertNotNull(menus)
-        assertEquals(1, menus!!.size)
-        val firstMenu = menus.first()
-        assertEquals(menu.id, firstMenu.id)
-        assertEquals(menu.name, firstMenu.name)
-        assertEquals(menu.price, firstMenu.price)
-        assertEquals(menu.createdAt, firstMenu.createdAt)
-        assertEquals(menu.updatedAt, firstMenu.updatedAt)
-
-        val review = Review.of(visit.id!!, "맛있어요!!", 5)
-        reviewRepository.save(review)
-
-        val reviewSelectedOptional = reviewRepository.findById(review.id!!)
-        assertTrue(reviewSelectedOptional.isPresent)
-        val reviewSelected = reviewSelectedOptional.get()
-        assertEquals(review.id, reviewSelected.id)
-        assertEquals(review.visitId, reviewSelected.visitId)
-        assertEquals(review.comment, reviewSelected.comment)
-        assertEquals(review.rating, reviewSelected.rating)
+    private fun createMember(): Member {
+        var member = Member("test-member", "test-lastname", "1234")
+        memberRepository.save(member)
+        return member
     }
 
 
