@@ -40,4 +40,8 @@ class Restaurant(
         this.menus!!.add(newMenu)
     }
 
+    fun removeMenu(menuIndex: Int) {
+        menus.removeAt(menuIndex)
+    }
+
 }

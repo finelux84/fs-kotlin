@@ -6,15 +6,13 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.annotation.Rollback
 import org.springframework.transaction.annotation.Transactional
 import javax.persistence.EntityManager
-import javax.persistence.EntityTransaction
 
 @Transactional
 @SpringBootTest
 class RestaurantTest (
-    @Autowired val menuRepository: MemberRepository,
+    @Autowired val memberRepository: MemberRepository,
     @Autowired val restaurantRepository: RestaurantRepository,
     @Autowired val entityManager: EntityManager,
 ){
@@ -36,8 +34,25 @@ class RestaurantTest (
         val restaurantOptional = restaurantRepository.findById(restaurant.id!!)
         val restaurantGot = restaurantOptional.get()
         assertTrue(restaurantGot.menus.size == 3)
-
     }
+
+    @Test
+    fun removeMenuTest() {
+        // given
+        val restaurant = createRestaurant()
+        restaurantRepository.save(restaurant)
+
+        // when
+        val menuIndex = 0
+        restaurant.removeMenu(menuIndex)
+        entityManager.flush()
+        entityManager.clear()
+
+        // then
+        val restaurant2 = restaurantRepository.findById(restaurant.id!!).get()
+        assertTrue(restaurant2.menus.size == 1)
+    }
+
     @Test
     fun createRestaurantTest() {
         // given
@@ -70,7 +85,6 @@ class RestaurantTest (
         val menu1 = Menu("디너 오마카세", 100000)
         val menu2 = Menu("런치 오마카세", 60000)
         val menus = mutableListOf<Menu>(menu1, menu2)
-        var restaurant = Restaurant.of("스시 코호시", "성남시", "판교 테크노밸리", menus)
-        return restaurant
+        return Restaurant.of("스시 코호시", "성남시", "판교 테크노밸리", menus)
     }
 }
