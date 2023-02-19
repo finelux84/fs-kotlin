@@ -18,8 +18,10 @@ class Review(
     var comment: String,
 
     @Column
-    var rating: Int
+    var rating: Int,
 
+    @Column
+    var restaurantId: Long,
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -36,9 +38,8 @@ class Review(
 
 
     companion object {
-        fun of(visitId: Long, comment: String, rating: Int): Review {
-            return Review(visitId, comment, rating)
+        fun of(visitId: Long, comment: String, rating: Int, restaurantId: Long): Review {
+            return Review(visitId, comment, rating, restaurantId)
         }
     }
-
 }

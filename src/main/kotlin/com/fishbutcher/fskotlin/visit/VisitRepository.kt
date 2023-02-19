@@ -6,5 +6,6 @@ import java.util.*
 
 @Repository
 interface VisitRepository : JpaRepository<Visit, Long>{
-    fun findByMemberId(memberId: Long);
+    fun findByMemberId(memberId: Long)
+    fun findByRestaurantId(restaurantId: Long): MutableList<Visit>
 }

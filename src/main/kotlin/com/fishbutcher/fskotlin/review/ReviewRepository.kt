@@ -7,4 +7,5 @@ import java.util.*
 
 @Repository
 interface ReviewRepository : JpaRepository<Review, Long>{
+
 }

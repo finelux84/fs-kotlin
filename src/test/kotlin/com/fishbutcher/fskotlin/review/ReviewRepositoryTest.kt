@@ -33,8 +33,7 @@ class ReviewRepositoryTest(
         var visit = createVisit(member, restaurant)
 
         // when
-        val visitSelectedOptional = visitRepository.findById(visit.visitId!!)
-        val review = Review.of(visit.visitId!!, "good", 5)
+        val review = Review.of(visit.visitId!!, "맛있어요....", 5)
         val savedReview = reviewRepository.save(review)
 
         // then

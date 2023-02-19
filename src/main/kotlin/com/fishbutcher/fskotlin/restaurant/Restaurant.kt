@@ -1,5 +1,7 @@
 package com.fishbutcher.fskotlin.restaurant
 
+import com.fishbutcher.fskotlin.review.Review
+import com.fishbutcher.fskotlin.visit.VisitRepository
 import java.time.LocalDateTime
 import javax.persistence.*
 
@@ -44,4 +46,12 @@ class Restaurant(
         menus.removeAt(menuIndex)
     }
 
+    fun getReviews(visitRepository: VisitRepository): MutableList<Review> {
+        val visits = visitRepository.findByRestaurantId(id!!)
+
+        val reviews = mutableListOf<Review>()
+        for (visit in visits) {
+            visit
+        }
+    }
 }
