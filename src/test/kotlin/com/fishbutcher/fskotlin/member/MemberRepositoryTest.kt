@@ -18,7 +18,7 @@ class MemberRepositoryTest(
     @DisplayName("회원 저장이 정상적으로 동작해야 한다")
     fun `회원 저장`() {
         // given
-        val account = Member("my name", "my last name", "1234")
+        val account = createMember()
 
         // when
         memberRepository.save(account);
@@ -35,5 +35,11 @@ class MemberRepositoryTest(
         assertNotNull(selectedAccount.createdAt);
         assertNotNull(selectedAccount.updatedAt);
         assertNull(selectedAccount.deletedAt);
+    }
+
+    companion object {
+        fun createMember(): Member {
+            return Member("my name", "my last name", "1234")
+        }
     }
 }

@@ -7,5 +7,6 @@ import java.util.*
 
 @Repository
 interface ReviewRepository : JpaRepository<Review, Long>{
+    fun findAllByRestaurantId(restaurantId: Long): List<Review>
 
 }

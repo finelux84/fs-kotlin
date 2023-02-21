@@ -36,7 +36,6 @@ class Review(
     @Column
     var deletedAt: LocalDateTime? = null
 
-
     companion object {
         fun of(visitId: Long, comment: String, rating: Int, restaurantId: Long): Review {
             return Review(visitId, comment, rating, restaurantId)

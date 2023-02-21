@@ -16,7 +16,6 @@ class RestaurantTest (
     @Autowired val restaurantRepository: RestaurantRepository,
     @Autowired val entityManager: EntityManager,
 ){
-
     @Test
     fun addMenuTest() {
         // given
@@ -49,8 +48,11 @@ class RestaurantTest (
         entityManager.clear()
 
         // then
-        val restaurant2 = restaurantRepository.findById(restaurant.id!!).get()
-        assertTrue(restaurant2.menus.size == 1)
+        val menusAvailable = restaurant.getMenusAvailable()
+        assertTrue(menusAvailable.size == 1)
+
+        val menusWithDeleted = restaurant.getMenusWithDeleted()
+        assertTrue(menusWithDeleted.size == 2)
     }
 
     @Test
@@ -81,10 +83,13 @@ class RestaurantTest (
         entityManager.clear()
     }
 
-    private fun createRestaurant(): Restaurant {
-        val menu1 = Menu("디너 오마카세", 100000)
-        val menu2 = Menu("런치 오마카세", 60000)
-        val menus = mutableListOf<Menu>(menu1, menu2)
-        return Restaurant.of("스시 코호시", "성남시", "판교 테크노밸리", menus)
+    companion object {
+        fun createRestaurant(): Restaurant {
+            val menu1 = Menu("디너 오마카세", 100000)
+            val menu2 = Menu("런치 오마카세", 60000)
+            val menus = mutableListOf<Menu>(menu1, menu2)
+            return Restaurant.of("스시 코호시", "성남시", "판교 테크노밸리", menus)
+        }
     }
+
 }

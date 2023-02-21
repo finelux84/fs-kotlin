@@ -43,15 +43,18 @@ class Restaurant(
     }
 
     fun removeMenu(menuIndex: Int) {
-        menus.removeAt(menuIndex)
+        val menu = menus[menuIndex]
+        menu.deletedAt = LocalDateTime.now()
     }
 
-    fun getReviews(visitRepository: VisitRepository): MutableList<Review> {
-        val visits = visitRepository.findByRestaurantId(id!!)
-
-        val reviews = mutableListOf<Review>()
-        for (visit in visits) {
-            visit
+    fun getMenusAvailable(): List<Menu> {
+        val availableMenus = menus.filter { menu ->
+            menu.deletedAt != null
         }
+        return availableMenus
+    }
+
+    fun getMenusWithDeleted(): List<Menu> {
+        return menus
     }
 }
