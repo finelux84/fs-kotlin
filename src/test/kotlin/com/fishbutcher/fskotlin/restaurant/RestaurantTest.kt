@@ -12,7 +12,6 @@ import javax.persistence.EntityManager
 @Transactional
 @SpringBootTest
 class RestaurantTest (
-    @Autowired val memberRepository: MemberRepository,
     @Autowired val restaurantRepository: RestaurantRepository,
     @Autowired val entityManager: EntityManager,
 ){

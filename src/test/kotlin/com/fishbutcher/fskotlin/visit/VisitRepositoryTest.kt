@@ -22,7 +22,7 @@ class VisitRepositoryTest(
     @Autowired val entityManager: EntityManager
 ) {
     @Test
-    @DisplayName("특정 회원의 방문 목록을 조회")
+    @DisplayName("특정 회원의 방문 내역 추가 테스트")
     fun testCreateVisit() {
         // given
         var member = createMember()
@@ -36,7 +36,6 @@ class VisitRepositoryTest(
 
         // then
         // Visit Entity가 검색되어야 하고,
-
         val visitOptional = visitRepository.findById(visit.id!!)
         assertTrue(visitOptional.isPresent)
         val visitSelected = visitOptional.get()
