@@ -10,9 +10,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.annotation.Rollback
 import org.springframework.transaction.annotation.Transactional
-import java.awt.SystemColor.menu
 import javax.persistence.EntityManager
 
 @SpringBootTest
@@ -31,6 +29,7 @@ class VisitRepositoryTest(
         var restaurant = createRestaurant()
         // when
         var visit = createVisit(member, restaurant)
+        visitRepository.save(visit)
 
         entityManager.flush()
         entityManager.clear()
@@ -38,11 +37,11 @@ class VisitRepositoryTest(
         // then
         // Visit Entity가 검색되어야 하고,
 
-        val visitOptional = visitRepository.findById(visit.visitId!!)
+        val visitOptional = visitRepository.findById(visit.id!!)
         assertTrue(visitOptional.isPresent)
         val visitSelected = visitOptional.get()
 
-        assertNotNull(visitSelected.visitId)
+        assertNotNull(visitSelected.id)
         assertNotNull(visitSelected.memberId)
         assertNotNull(visitSelected.restaurantId)
         assertNotNull(visitSelected.createdAt)
@@ -77,9 +76,7 @@ class VisitRepositoryTest(
     ): Visit {
         var order = Order(0) // 디너 오마카세
         val orders = mutableListOf<Order>(order)
-        var visit = Visit(member.id!!, restaurant.id!!, orders)
-        visitRepository.save(visit)
-        return visit
+        return Visit(member.id!!, restaurant.id!!, orders)
     }
 
     private fun createRestaurant(): Restaurant {
@@ -97,4 +94,14 @@ class VisitRepositoryTest(
         return member
     }
 
+    companion object {
+        fun createVisit(
+            member: Member,
+            restaurant: Restaurant
+        ): Visit {
+            var order = Order(0) // 디너 오마카세
+            val orders = mutableListOf<Order>(order)
+            return Visit(member.id!!, restaurant.id!!, orders)
+        }
+    }
 }

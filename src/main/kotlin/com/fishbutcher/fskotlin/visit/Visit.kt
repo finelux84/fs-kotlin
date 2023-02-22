@@ -18,7 +18,7 @@ class Visit(
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tbl_visit_seq")
-    var visitId: Long? = null
+    var id: Long? = null
 
     @Column
     var createdAt: LocalDateTime = LocalDateTime.now()

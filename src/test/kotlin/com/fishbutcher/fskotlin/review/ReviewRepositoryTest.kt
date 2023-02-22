@@ -5,17 +5,16 @@ import com.fishbutcher.fskotlin.member.MemberRepository
 import com.fishbutcher.fskotlin.restaurant.Menu
 import com.fishbutcher.fskotlin.restaurant.Restaurant
 import com.fishbutcher.fskotlin.restaurant.RestaurantRepository
-import com.fishbutcher.fskotlin.visit.Order
 import com.fishbutcher.fskotlin.visit.Visit
 import com.fishbutcher.fskotlin.visit.VisitRepository
-import org.assertj.core.api.Assertions.assertThat
+import com.fishbutcher.fskotlin.visit.VisitRepositoryTest
+import com.fishbutcher.fskotlin.visit.VisitRepositoryTest.Companion.createVisit
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.transaction.annotation.Transactional
-import java.awt.SystemColor.menu
 import javax.persistence.EntityManager
 
 @SpringBootTest
@@ -27,16 +26,24 @@ class ReviewRepositoryTest(
     @Autowired val reviewRepository: ReviewRepository,
     @Autowired val entityManager: EntityManager,
 ) {
+    companion object {
+        fun createReview(visit: Visit, restaurant: Restaurant): Review {
+            return Review.of(visit.id!!, "맛있어요....", 5, restaurant.id!!)
+        }
+    }
+
     @Test
     @DisplayName("리뷰 저장 테스트")
     fun `리뷰 저장`() {
         // given
         var member = createMember()
         var restaurant = createRestaurant()
-        var visit = createVisit(member, restaurant)
+
+        var visit = VisitRepositoryTest.createVisit(member, restaurant)
+        visitRepository.save(visit)
 
         // when
-        val review = Review.of(visit.visitId!!, "맛있어요....", 5, restaurant.id!!)
+        val review = createReview(visit, restaurant)
         val savedReview = reviewRepository.save(review)
 
         // then
@@ -63,11 +70,14 @@ class ReviewRepositoryTest(
         var visit1 = createVisit(member, restaurant)
         var visit2 = createVisit(member, restaurant)
         var visit3 = createVisit(member, restaurant)
+        visitRepository.save(visit1)
+        visitRepository.save(visit2)
+        visitRepository.save(visit3)
 
         // when
-        val review1 = Review.of(visit1.visitId!!, "맛있어요.#", 5, restaurant.id!!)
-        val review2 = Review.of(visit2.visitId!!, "맛있어요..@", 5, restaurant.id!!)
-        val review3 = Review.of(visit3.visitId!!, "맛있어요...!", 5, restaurant.id!!)
+        val review1 = Review.of(visit1.id!!, "맛있어요.#", 5, restaurant.id!!)
+        val review2 = Review.of(visit2.id!!, "맛있어요..@", 5, restaurant.id!!)
+        val review3 = Review.of(visit3.id!!, "맛있어요...!", 5, restaurant.id!!)
 
         val reviews = mutableListOf(review1, review2, review3)
         reviewRepository.saveAll(reviews)
@@ -79,17 +89,6 @@ class ReviewRepositoryTest(
 
         // then
         assertEquals(3, reviewsSelected.size)
-    }
-
-    private fun createVisit(
-        member: Member,
-        restaurant: Restaurant
-    ): Visit {
-        var order = Order(0) // 디너 오마카세
-        val orders = mutableListOf<Order>(order)
-        var visit = Visit(member.id!!, restaurant.id!!, orders)
-        visitRepository.save(visit)
-        return visit
     }
 
     private fun createRestaurant(): Restaurant {
