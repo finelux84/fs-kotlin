@@ -1,6 +1,6 @@
 package com.fishbutcher.fskotlin.restaurant
 
-import com.fishbutcher.fskotlin.member.MemberRepository
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -80,6 +80,35 @@ class RestaurantTest (
         assertNotNull(firstMenu.price)
         entityManager.flush()
         entityManager.clear()
+    }
+
+    @Test
+    fun getAllMenusTest() {
+        // given
+        val restaurant = createRestaurant()
+        // when
+        restaurantRepository.save(restaurant)
+        // then
+        val restaurant1 = restaurantRepository.findById(restaurant.id!!).get()
+        val menusWithDeleted = restaurant1.getMenusWithDeleted()
+        assertThat(menusWithDeleted.size).isEqualTo(2)
+    }
+
+    @Test
+    fun getAvailableMenusTest() {
+        // given
+        val restaurant = createRestaurant()
+        // when
+        restaurantRepository.save(restaurant)
+
+        entityManager.flush()
+        entityManager.clear()
+
+        // then
+        val restaurant1 = restaurantRepository.findById(restaurant.id!!).get()
+        restaurant1.removeMenu(0)
+        val availableMenus = restaurant1.getMenusAvailable()
+        assertThat(availableMenus.size).isEqualTo(1)
     }
 
     companion object {
