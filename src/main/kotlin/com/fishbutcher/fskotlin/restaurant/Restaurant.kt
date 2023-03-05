@@ -2,6 +2,7 @@ package com.fishbutcher.fskotlin.restaurant
 
 import com.fishbutcher.fskotlin.review.Review
 import com.fishbutcher.fskotlin.visit.VisitRepository
+import org.hibernate.annotations.SQLDelete
 import java.time.LocalDateTime
 import javax.persistence.*
 

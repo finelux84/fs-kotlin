@@ -28,8 +28,4 @@ class Visit(
 
     @Column(name = "deleted_at")
     var deletedAt: LocalDateTime? = null
-
-    fun addOrder(order: Order) {
-        this.orders!!.add(order)
-    }
 }
